@@ -26,7 +26,7 @@ func main() {
 		Handler: router,
 	}
 
-	slog.Info("Server is running on", cfg.HTTPServer.Address)
+	slog.Info("Server is running", "address", cfg.HTTPServer.Address)
 
 	done := make(chan os.Signal, 1)                                    // we are using a channel to handle the shutdown
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM) // Notify the done channel when the type of signals given gets triggered
