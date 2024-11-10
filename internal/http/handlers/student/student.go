@@ -3,6 +3,7 @@ package student
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -16,9 +17,14 @@ func New() http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&student) // decoding incoming data
 		if errors.Is(err, io.EOF) {                     // checking incoming data is type of Student or not
-			response.WriteJson(w, http.StatusBadRequest, err.Error())
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(fmt.Errorf("request body is empty")))
 			return
 		}
+		if err != nil {
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+			return
+		}
+
 		response.WriteJson(w, http.StatusCreated, map[string]interface{}{"data": student, "success": "OK"})
 	}
 }
