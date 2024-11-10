@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/MdSadiqMd/students-go/internal/config"
+	"github.com/MdSadiqMd/students-go/internal/http/handlers/student"
 )
 
 func main() {
@@ -20,7 +21,8 @@ func main() {
 	router.HandleFunc("GET /ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	})
-
+	router.HandleFunc("POST /api/v1/student", student.New())
+	
 	server := http.Server{
 		Addr:    cfg.HTTPServer.Address,
 		Handler: router,
