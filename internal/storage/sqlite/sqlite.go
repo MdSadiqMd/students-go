@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/MdSadiqMd/students-go/internal/config"
 	"github.com/MdSadiqMd/students-go/internal/types"
@@ -63,7 +64,10 @@ func (s *Sqlite) GetStudentById(id int64) (types.Student, error) {
 	var student types.Student
 	err = stmt.QueryRow(id).Scan(&student.Id, &student.Name, &student.Email, &student.Age)
 	if err != nil {
-		return types.Student{}, err
+		if err == sql.ErrNoRows {
+			return types.Student{}, nil
+		}
+		return types.Student{}, fmt.Errorf("student not found: %w", err)
 	}
 	return student, nil
 }
