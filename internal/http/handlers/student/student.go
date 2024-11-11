@@ -62,7 +62,19 @@ func GetById(storage storage.Storage) http.HandlerFunc {
 			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
 			return
 		}
-		
+
+		response.WriteJson(w, http.StatusOK, map[string]interface{}{"data": student, "success": "OK"})
+	}
+}
+
+func GetList(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		student, err := storage.GetStudentList()
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			return
+		}
+
 		response.WriteJson(w, http.StatusOK, map[string]interface{}{"data": student, "success": "OK"})
 	}
 }
