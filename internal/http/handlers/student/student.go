@@ -5,14 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
+	"github.com/MdSadiqMd/students-go/internal/storage"
 	"github.com/MdSadiqMd/students-go/internal/types"
 	"github.com/MdSadiqMd/students-go/internal/utils/response"
 	"github.com/go-playground/validator"
 )
 
-func New() http.HandlerFunc {
+func New(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var student types.Student // defining type of incoming data and holding it in a variable
 
@@ -32,6 +34,13 @@ func New() http.HandlerFunc {
 			response.WriteJson(w, http.StatusBadRequest, response.ValidationError(validateError))
 			return
 		}
+
+		LastInsertId, err := storage.CreateStudent(student.Name, student.Email, student.Age)
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			return
+		}
+		slog.Info("Student created", "id", LastInsertId)
 
 		response.WriteJson(w, http.StatusCreated, map[string]interface{}{"data": student, "success": "OK"})
 	}
