@@ -45,3 +45,11 @@ func New(storage storage.Storage) http.HandlerFunc {
 		response.WriteJson(w, http.StatusCreated, map[string]interface{}{"data": student, "success": "OK"})
 	}
 }
+
+func GetById(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		
+		response.WriteJson(w, http.StatusOK, map[string]interface{}{"data": student, "success": "OK"})
+	}
+}

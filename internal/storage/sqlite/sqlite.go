@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/MdSadiqMd/students-go/internal/config"
+	"github.com/MdSadiqMd/students-go/internal/types"
 	_ "github.com/mattn/go-sqlite3" // we are using this package indirectly (not using function from it) so to avoid error we use _ blank identifier
 )
 
@@ -49,4 +50,20 @@ func (s *Sqlite) CreateStudent(name string, email string, age int) (int64, error
 		return 0, err
 	}
 	return id, nil
+}
+
+func (s *Sqlite) GetStudentById(id int64) (types.Student, error) {
+	stmt, err := s.Db.Prepare("SELECT * FROM students WHERE id = ? LIMIT 1")
+	if err != nil {
+		return types.Student{}, err
+	}
+
+	defer stmt.Close()
+
+	var student types.Student
+	err = stmt.QueryRow(id).Scan(&student.Id, &student.Name, &student.Email, &student.Age)
+	if err != nil {
+		return types.Student{}, err
+	}
+	return student, nil
 }
