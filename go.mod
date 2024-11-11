@@ -5,6 +5,7 @@ go 1.23.3
 require (
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/ilyakaznacheev/cleanenv v1.5.0
+	github.com/mattn/go-sqlite3 v1.14.24
 )
 
 require (

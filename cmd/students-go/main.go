@@ -12,17 +12,23 @@ import (
 
 	"github.com/MdSadiqMd/students-go/internal/config"
 	"github.com/MdSadiqMd/students-go/internal/http/handlers/student"
+	"github.com/MdSadiqMd/students-go/internal/storage/sqlite"
 )
 
 func main() {
 	cfg := config.MustLoad()
+	storage, err := sqlite.New(cfg)
+	if err != nil {
+		log.Fatal("Failed to create storage: ", err) // No need to start server if database is not created
+	}
+
 	router := http.NewServeMux()
 
 	router.HandleFunc("GET /ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	})
-	router.HandleFunc("POST /api/v1/student", student.New())
-	
+	router.HandleFunc("POST /api/v1/student", student.New(storage))
+
 	server := http.Server{
 		Addr:    cfg.HTTPServer.Address,
 		Handler: router,
@@ -46,7 +52,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := server.Shutdown(ctx)
+	err = server.Shutdown(ctx)
 	if err != nil {
 		log.Fatal("Failed to shutdown server: ", err)
 	}
