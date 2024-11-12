@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	"github.com/MdSadiqMd/students-go/internal/config"
 	"github.com/MdSadiqMd/students-go/internal/types"
@@ -132,4 +133,20 @@ func (s *Sqlite) UpdateStudent(id int64, name string, email string, age int) err
 		return err
 	}
 	return nil
+}
+
+func (s *Sqlite) DeleteStudent(id int64) (string, error) {
+	stmt, err := s.Db.Prepare("DELETE FROM students WHERE id = ?")
+	if err != nil {
+		return "", err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatInt(id, 10), nil
 }
