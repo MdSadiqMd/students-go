@@ -96,3 +96,40 @@ func (s *Sqlite) GetStudentList() ([]types.Student, error) {
 	}
 	return students, nil
 }
+
+func (s *Sqlite) UpdateStudent(id int64, name string, email string, age int) error {
+	var query string
+	var values []interface{}
+
+	if name != "" {
+		query += "name = ?,"
+		values = append(values, name)
+	}
+	if email != "" {
+		query += "email = ?,"
+		values = append(values, email)
+	}
+	if age != 0 {
+		query += "age = ?,"
+		values = append(values, age)
+	}
+
+	if query == "" {
+		return nil
+	}
+
+	query = "UPDATE students SET " + query[:len(query)-1] + " WHERE id = ?"
+	stmt, err := s.Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	values = append(values, id)
+	_, err = stmt.Exec(values...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
